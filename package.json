@@ -4,10 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "clean": "rimraf lighthouse",
-    "open-report-windows": "start lighthouse/lighthouse-report.html",
-    "open-report-unix": "open lighthouse/lighthouse-report.html",
-    "only": "cucumber-js --tags @only",
+    "only": "cucumber-js --tags @only",  
     "all": "cucumber-js"
   },
   "author": "",

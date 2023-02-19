@@ -12,7 +12,7 @@ Feature: Submit a form
     When I enter incomplete form data
     And I click the Submit button
     Then I should assert that no have message
-  
+  @only
   Scenario: Verify that the First name field accepts only valid inputs
     Given I am on the form page
     When I enter an invalid First name
