@@ -1,8 +1,10 @@
 const { Given, When, Then } = require('@cucumber/cucumber');
 const { chromium } = require('playwright');
+const { expect } = require('@playwright/test');
 
 let browser;
 let page;
+var msg = '';
 
 Given('I am on the form page', async () => {
   browser = await chromium.launch({ headless: false });
@@ -30,24 +32,23 @@ When('I enter valid form data', async () => {
 When('I enter incomplete form data', async () => {
   const firstName = 'John';
   const email = 'johndoe@example.com';
-
   await page.fill('input[name="FirstName"]', firstName);
   await page.fill('input[name="Email"]', email);
 });
 
 When('I click the Submit button', async () => {
+  
   await Promise.all([
+    page.on('dialog', dialog => msg = dialog.message()),
+    page.on('dialog', dialog => dialog.accept()),
+    console.log(msg),
     page.click('input[type="submit"][name="submitbutton"]'),
   ]);
+
 });
 
-Then('I should see a success message', async () => {
-  //await page.waitForSelector('.success-message');
-  console.log('Form submitted successfully');
+Then('I should assert the success message', async () => {
+  const expectedJson = '{"FirstName":"John","LastName":"Doe","Email":"johndoe@example.com","PhoneNumber":"1234567890","Gender":"Male","Agreement":true}';
+  await expect(msg).toContain(expectedJson);
   await browser.close();
-});
-
-Then('I should see an error message', async () => {
-  await page.waitForSelector('.error-message');
-  console.log('Form submission failed');
 });
