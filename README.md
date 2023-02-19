@@ -1,7 +1,7 @@
 # Introduction
 This is a test automation project built with Cucumber.js and Playwright. It contains end-to-end tests for a web application.
 
-## Prerequisites
+## Pre-requisites
 Before running this project, you need to install Node.js. You can download and install Node.js from the official website https://nodejs.org/en/.
 
 To verify that Node.js is installed, open a terminal and run the following command:
@@ -9,7 +9,6 @@ To verify that Node.js is installed, open a terminal and run the following comma
 ```bash
 node -v
 ```
-
 
 If Node.js is installed correctly, you should see the version number in the output.
 
@@ -20,7 +19,9 @@ To install the project dependencies, navigate to the root directory of the proje
 npm i
 ```
 
-This command will install all the dependencies listed in the package.json file.
+This command will install all the dependencies listed in the package.json file. If you encounter any errors, you may need to install Cucumber and Playwright globally.
+
+If you want to generate reports using Allure, you also need to have Java installed on your computer.
 
 Running Tests
 To run all the tests, type the following command in the terminal:
@@ -37,3 +38,14 @@ To run a specific test, you can use the @only tag. Add the tag above the scenari
 npm run only
 ```
 
+To run a test and generate the data needed to create the Allure report, use the following command:
+
+```bash
+npm run testWithAllureReport
+```
+
+To view the Allure report, use the following command:
+
+```bash
+npm run allure
+```

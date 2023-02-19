@@ -1,4 +1,3 @@
 node_modules
 lighthouse
-playwright-report
-test-results
+allure-results
