@@ -55,3 +55,13 @@ Then('I should assert the success message', async () => {
   console.log('Form submitted successfully');
   await browser.close();
 });
+
+When('I enter incomplete form data', async () => {
+  await page.check('input[type="checkbox"][name="Agreement"]');
+});
+
+Then('I should assert that no have message', async () => {
+  expect(dialogMessage).to.contain('');
+  console.log('Form submitted successfully');
+  await browser.close();
+});
