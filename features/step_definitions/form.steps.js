@@ -1,54 +1,57 @@
 const { Given, When, Then } = require('@cucumber/cucumber');
 const { chromium } = require('playwright');
-const { expect } = require('@playwright/test');
+const { expect } = require('chai');
 
 let browser;
+let context;
 let page;
-var msg = '';
+let dialogMessage = '';
 
 Given('I am on the form page', async () => {
   browser = await chromium.launch({ headless: false });
-  const context = await browser.newContext();
+  context = await browser.newContext();
   page = await context.newPage();
   await page.goto('https://vladimirwork.github.io/web-ui-playground/');
-  
 });
 
 When('I enter valid form data', async () => {
-  const firstName = 'John';
-  const lastName = 'Doe';
-  const email = 'johndoe@example.com';
-  const phone = '1234567890';
-
-  await page.fill('input[name="FirstName"]', firstName);
-  await page.fill('input[name="LastName"]', lastName);
-  await page.fill('input[name="Email"]', email);
-  await page.fill('input[name="PhoneNumber"]', phone);
-  await page.check('input[type="radio"][value="Male"]');
+  const data = {
+    FirstName: 'John',
+    LastName: 'Doe',
+    Email: 'johndoe@example.com',
+    PhoneNumber: '1234567890',
+    Gender: 'Male',
+    Agreement: true,
+  };
+  await page.fill('input[name="FirstName"]', data.FirstName);
+  await page.fill('input[name="LastName"]', data.LastName);
+  await page.fill('input[name="Email"]', data.Email);
+  await page.fill('input[name="PhoneNumber"]', data.PhoneNumber);
+  await page.check(`input[type="radio"][value="${data.Gender}"]`);
   await page.check('input[type="checkbox"][name="Agreement"]');
-  
-});
-
-When('I enter incomplete form data', async () => {
-  const firstName = 'John';
-  const email = 'johndoe@example.com';
-  await page.fill('input[name="FirstName"]', firstName);
-  await page.fill('input[name="Email"]', email);
 });
 
 When('I click the Submit button', async () => {
-  
   await Promise.all([
-    page.on('dialog', dialog => msg = dialog.message()),
-    page.on('dialog', dialog => dialog.accept()),
-    console.log(msg),
+    page.on('dialog', async (dialog) => {
+      dialogMessage = await dialog.message();
+      await dialog.accept();
+    }),
     page.click('input[type="submit"][name="submitbutton"]'),
   ]);
-
 });
 
 Then('I should assert the success message', async () => {
-  const expectedJson = '{"FirstName":"John","LastName":"Doe","Email":"johndoe@example.com","PhoneNumber":"1234567890","Gender":"Male","Agreement":true}';
-  await expect(msg).toContain(expectedJson);
+  const expectedData = {
+    FirstName: 'John',
+    LastName: 'Doe',
+    Email: 'johndoe@example.com',
+    PhoneNumber: '1234567890',
+    Gender: 'Male',
+    Agreement: true,
+  };
+  const expectedMessage = JSON.stringify(expectedData);
+  expect(dialogMessage).to.contain(expectedMessage);
+  console.log('Form submitted successfully');
   await browser.close();
 });
