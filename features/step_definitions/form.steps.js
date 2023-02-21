@@ -1,14 +1,23 @@
-const { Given, When, Then } = require('@cucumber/cucumber');
+const { AfterAll, Given, When, Then } = require('@cucumber/cucumber');
 const { chromium } = require('playwright');
 const { expect } = require('chai');
+const webUiPage = require('../../page_definitions/webUiPage.js');
 
 let browser;
 let context;
 let page;
 let dialogMessage = '';
 
+AfterAll(async () => {
+  try {
+    await browser.close();
+  } catch (error) {
+    console.error(error);
+  }
+});
+
 Given('I am on the form page', async () => {
-  browser = await chromium.launch({ headless: false });
+  browser = await chromium.launch({ headless: true });
   context = await browser.newContext();
   page = await context.newPage();
   await page.goto('https://vladimirwork.github.io/web-ui-playground/');
@@ -23,15 +32,11 @@ When('I enter valid form data', async () => {
     Gender: 'Male',
     Agreement: true,
   };
-  await page.fill('input[name="FirstName"]', data.FirstName);
-  await page.fill('input[name="LastName"]', data.LastName);
-  await page.fill('input[name="Email"]', data.Email);
-  await page.fill('input[name="PhoneNumber"]', data.PhoneNumber);
-  await page.check(`input[type="radio"][value="${data.Gender}"]`);
-  await page.check('input[type="checkbox"][name="Agreement"]');
+  webUiPage.fillOutFormData(page, data);
 });
 
 When('I click the Submit button', async () => {
+  await page.waitForTimeout(700);
   await Promise.all([
     page.on('dialog', async (dialog) => {
       dialogMessage = await dialog.message();
@@ -53,7 +58,6 @@ Then('I should assert the success message', async () => {
   const expectedMessage = JSON.stringify(expectedData);
   expect(dialogMessage).to.contain(expectedMessage);
   console.log('Form submitted successfully');
-  await browser.close();
 });
 
 When('I enter incomplete form data', async () => {
@@ -63,7 +67,6 @@ When('I enter incomplete form data', async () => {
 Then('I should assert that no have message', async () => {
   expect(dialogMessage).to.contain('');
   console.log('Form submitted successfully');
-  await browser.close();
 });
 
 When('I enter an invalid First name', async () => {
@@ -75,12 +78,7 @@ When('I enter an invalid First name', async () => {
     Gender: 'Male',
     Agreement: true,
   };
-  await page.fill('input[name="FirstName"]', data.FirstName);
-  await page.fill('input[name="LastName"]', data.LastName);
-  await page.fill('input[name="Email"]', data.Email);
-  await page.fill('input[name="PhoneNumber"]', data.PhoneNumber);
-  await page.check(`input[type="radio"][value="${data.Gender}"]`);
-  await page.check('input[type="checkbox"][name="Agreement"]');
+  webUiPage.fillOutFormData(page, data);
 });
 
 When('I should assert that a valid First name is required', async () => {
@@ -100,12 +98,7 @@ When('I enter an invalid Phone number', async () => {
     Gender: 'Male',
     Agreement: true,
   };
-  await page.fill('input[name="FirstName"]', data.FirstName);
-  await page.fill('input[name="LastName"]', data.LastName);
-  await page.fill('input[name="Email"]', data.Email);
-  await page.fill('input[name="PhoneNumber"]', data.PhoneNumber);
-  await page.check(`input[type="radio"][value="${data.Gender}"]`);
-  await page.check('input[type="checkbox"][name="Agreement"]');
+  webUiPage.fillOutFormData(page, data);
 });
 
 When('I enter an valid Phone number', async () => {
@@ -117,12 +110,7 @@ When('I enter an valid Phone number', async () => {
     Gender: 'Male',
     Agreement: true,
   };
-  await page.fill('input[name="FirstName"]', data.FirstName);
-  await page.fill('input[name="LastName"]', data.LastName);
-  await page.fill('input[name="Email"]', data.Email);
-  await page.fill('input[name="PhoneNumber"]', data.PhoneNumber);
-  await page.check(`input[type="radio"][value="${data.Gender}"]`);
-  await page.check('input[type="checkbox"][name="Agreement"]');
+  webUiPage.fillOutFormData(page, data);
 });
 
 When('I should assert that a valid Phone number is required', async () => {
@@ -142,12 +130,7 @@ When('I enter an invalid email', async () => {
     Gender: 'Male',
     Agreement: true,
   };
-  await page.fill('input[name="FirstName"]', data.FirstName);
-  await page.fill('input[name="LastName"]', data.LastName);
-  await page.fill('input[name="Email"]', data.Email);
-  await page.fill('input[name="PhoneNumber"]', data.PhoneNumber);
-  await page.check(`input[type="radio"][value="${data.Gender}"]`);
-  await page.check('input[type="checkbox"][name="Agreement"]');
+  webUiPage.fillOutFormData(page, data);
 });
 
 When('I should assert that a valid email is required', async () => {
