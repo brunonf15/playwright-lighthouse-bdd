@@ -3,23 +3,22 @@ const { chromium } = require('playwright');
 const { expect } = require('chai');
 const webUiPage = require('../../page_definitions/webUiPage.js');
 
-let browser;
-let context;
-let page;
+let browser = null;
+let context = null;
+let page = null;
 let dialogMessage = '';
 
-AfterAll(async () => {
-  try {
-    await browser.close();
-  } catch (error) {
-    console.error(error);
+async function getBrowser() {
+  if (!browser) {
+    browser = await chromium.launch({ headless: false });
+    context = await browser.newContext();
+    page = await context.newPage();
   }
-});
+  return browser;
+}
 
 Given('I am on the form page', async () => {
-  browser = await chromium.launch({ headless: true });
-  context = await browser.newContext();
-  page = await context.newPage();
+  browser = await getBrowser();
   await page.goto('https://vladimirwork.github.io/web-ui-playground/');
 });
 
@@ -139,4 +138,10 @@ When('I should assert that a valid email is required', async () => {
   const errorElement = await page.waitForSelector(errorSelector);
   const errorText = await errorElement.textContent();
   expect(errorText).contain(errorMessage);
+});
+
+AfterAll(async () => {
+  if (browser) {
+    await browser.close();
+  }
 });
